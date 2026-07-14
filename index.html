@@ -20,7 +20,7 @@
         .hidden-view { display: none !important; }
     </style>
 </head>
-<body class="bg-purple-500 text-slate-900 font-serif min-h-screen flex flex-col justify-between">
+<body class="bg-purple-400 text-slate-900 font-serif min-h-screen flex flex-col justify-between">
     
     <nav class="bg-purple-950 text-white p-4 shadow-2xl border-b border-purple-800 sticky top-0 z-50">
         <div class="max-w-5xl mx-auto flex justify-between items-center gap-2">
@@ -405,16 +405,38 @@
                 backgroundColor: "#ffffff" 
             }).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
+                const nextBtn = document.getElementById('btn-next-step');
                 
-                const link = document.createElement('a');
-                link.href = imgData;
-                link.download = 'ZEC-Calculator-Summary.png';
-                link.click();
+                // I-check kung cellphone o tablet ang gamit ng user
+                const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
                 
+                if (isMobile) {
+                    // KAPAG MOBILE: Ipakita ang image sa screen para ma-long press at mai-save nila
+                    const mobileImg = document.createElement('img');
+                    mobileImg.src = imgData;
+                    mobileImg.className = "w-full rounded-xl shadow-md my-4 border-2 border-purple-300 p-1";
+                    
+                    const instruction = document.createElement('p');
+                    instruction.className = "text-center text-xs text-purple-900 font-bold mb-4 bg-purple-100 p-3 rounded-xl animate-pulse border border-purple-200";
+                    instruction.innerText = "📸 HELD IMAGE TO SAVE: Diinan nang matagal (Long Press) ang larawan sa itaas at i-click ang 'Save to Photos' o 'Download Image'.";
+                    
+                    // Isalpak ang image at instruction bago lumabas ang Next Button
+                    const wrapper = document.getElementById('step-1-wrapper');
+                    wrapper.insertBefore(mobileImg, nextBtn);
+                    wrapper.insertBefore(instruction, nextBtn);
+                } else {
+                    // KAPAG PC/DESKTOP: Automatic download gaya ng dati
+                    const link = document.createElement('a');
+                    link.href = imgData;
+                    link.download = 'ZEC-Calculator-Summary.png';
+                    link.click();
+                }
+                
+                // Itago ang confirmation checkbox at ang download button
                 document.getElementById('confirm-section').style.display = 'none';
                 btn.style.display = 'none';
                 
-                const nextBtn = document.getElementById('btn-next-step');
+                // Ipakita ang Next Button papuntang Step 2
                 nextBtn.classList.remove('hidden');
                 nextBtn.classList.add('flex');
             }).catch(err => {
